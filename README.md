@@ -1,6 +1,6 @@
 # Binary Search Lab
 
-An Astro 6 static site. Step through binary search, or enter a missing target to see the search interval become empty.
+An Astro 7 static site. Step through binary search, or enter a missing target to see the search interval become empty.
 
 ## Run in WSL
 
