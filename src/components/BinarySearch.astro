@@ -1,0 +1,85 @@
+<section class="lab" data-binary-search aria-label="Binary search exercise">
+  <form>
+    <label>
+      Target
+      <input type="number" min="-99" max="99" value="42" required />
+    </label>
+    <button type="submit">Restart</button>
+  </form>
+  <ol aria-label="Sorted array">
+    {[3, 8, 12, 17, 23, 31, 42, 57, 68].map((value) => <li>{value}</li>)}
+  </ol>
+  <p role="status">Compare the target with the outlined midpoint.</p>
+  <button type="button">Step</button>
+</section>
+
+<script>
+  for (const lab of document.querySelectorAll('[data-binary-search]')) {
+    const form = lab.querySelector<HTMLFormElement>('form')!;
+    const input = lab.querySelector<HTMLInputElement>('input')!;
+    const cells = [...lab.querySelectorAll<HTMLLIElement>('ol li')];
+    const values = cells.map((cell) => Number(cell.textContent));
+    const result = lab.querySelector<HTMLElement>('[role="status"]')!;
+    const step = lab.querySelector<HTMLButtonElement>('button[type="button"]')!;
+    let target = input.valueAsNumber;
+    let low = 0;
+    let high = values.length - 1;
+    let comparisons = 0;
+    let found = -1;
+    const midpoint = () => Math.floor((low + high) / 2);
+
+    function render(message: string) {
+      const probe = low <= high && found === -1 ? midpoint() : -1;
+      cells.forEach((cell, index) => {
+        cell.dataset.state = index === found ? 'found' : index === probe ? 'probe' :
+          index < low || index > high ? 'discarded' : 'active';
+      });
+      result.textContent = message;
+      step.disabled = found !== -1 || low > high;
+    }
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      target = input.valueAsNumber;
+      low = 0;
+      high = values.length - 1;
+      comparisons = 0;
+      found = -1;
+      render(`Searching for ${target}. Compare it with the outlined midpoint.`);
+    });
+
+    step.addEventListener('click', () => {
+      const mid = midpoint();
+      const value = values[mid];
+      comparisons += 1;
+      if (value === target) {
+        found = mid;
+        render(`Found ${target} at index ${mid} after ${comparisons} comparison(s).`);
+        return;
+      }
+      if (target < value) high = mid - 1;
+      else low = mid + 1;
+      const direction = target < value ? 'left' : 'right';
+      render(low > high
+        ? `${target} is absent after ${comparisons} comparisons.`
+        : `Compared with ${value}. Keep the ${direction} half and inspect the new midpoint.`);
+    });
+
+    render(`Searching for ${target}. Compare it with the outlined midpoint.`);
+  }
+</script>
+
+<style>
+  .lab { margin: 2rem 0; padding: clamp(1rem, 4vw, 2rem); background: #182832; border: 1px solid #35505a; border-radius: 1rem; }
+  form { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+  label { display: flex; align-items: center; gap: .75rem; }
+  button, input { font: inherit; padding: .55rem .8rem; border: 1px solid #85e8ca; border-radius: .4rem; }
+  input { width: 6rem; color: inherit; background: #101921; }
+  button { cursor: pointer; background: #85e8ca; color: #101921; font-weight: 700; }
+  button:disabled { opacity: .45; cursor: default; }
+  ol { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: .25rem; padding: 0; list-style: none; margin: 1.5rem 0; }
+  li { display: grid; place-items: center; min-height: 3rem; border: 1px solid #49616c; border-radius: .35rem; font: 600 clamp(.75rem, 3vw, 1.2rem) ui-monospace, monospace; }
+  li[data-state='probe'] { border: 2px solid #85e8ca; }
+  li[data-state='found'] { background: #85e8ca; color: #101921; }
+  li[data-state='discarded'] { color: #8ba0aa; text-decoration: line-through; }
+</style>

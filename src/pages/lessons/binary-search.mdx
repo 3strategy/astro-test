@@ -1,0 +1,25 @@
+---
+layout: ../../layouts/LabLayout.astro
+title: Binary Search Lesson
+description: Learn how binary search works and step through the algorithm.
+---
+
+import BinarySearch from '../../components/BinarySearch.astro';
+
+<p><a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/`}>Back to the lab</a></p>
+
+# Binary search
+
+Binary search finds a target in a **sorted list**. Start in the middle.
+If the target is smaller, search the left half. If it’s larger, search
+the right half. Repeat until you find it or run out of values.
+
+## Try it
+
+Search for **42**. Before clicking **Step**, predict which half will
+remain. Then try **24**, which isn’t in the list.
+
+<BinarySearch />
+
+**Check your understanding:** Why does the list need to be sorted
+before you can safely discard half of it?

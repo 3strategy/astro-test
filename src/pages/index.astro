@@ -1,91 +1,20 @@
 ---
-import '../styles/lab.css';
+import BinarySearch from '../components/BinarySearch.astro';
+import LabLayout from '../layouts/LabLayout.astro';
+
+const lessonUrl = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/lessons/binary-search/`;
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="An interactive lesson on binary search." />
-    <title>Binary Search Lab</title>
-  </head>
-  <body>
-    <main>
-      <header>
-        <p class="eyebrow">ALGORITHMS LAB</p>
-        <h1>Binary search</h1>
-        <p>Find a target in a sorted array. Before each step, predict which half the algorithm will keep.</p>
-      </header>
-      <section class="lab" aria-label="Binary search exercise">
-        <form id="target-form">
-          <label for="target">Target</label>
-          <input id="target" type="number" min="-99" max="99" value="42" required />
-          <button type="submit">Restart</button>
-        </form>
-        <ol id="cells" aria-label="Sorted array">
-          {[3, 8, 12, 17, 23, 31, 42, 57, 68].map((value) => <li>{value}</li>)}
-        </ol>
-        <p id="result" role="status">Compare the target with the outlined midpoint.</p>
-        <button type="button" id="step">Step</button>
-      </section>
-      <section>
-        <h2>Why it works</h2>
-        <p>When the target is larger than the midpoint, every number to the left is too small. When it’s smaller, the numbers to the right are too large. Each comparison cuts the remaining search interval roughly in half, so the worst case grows as <code>O(log n)</code>.</p>
-        <p>Try searching for <strong>24</strong> to see how the algorithm handles a missing value.</p>
-      </section>
-    </main>
-    <script>
-      const form = document.querySelector<HTMLFormElement>('#target-form')!;
-      const input = document.querySelector<HTMLInputElement>('#target')!;
-      const cells = [...document.querySelectorAll<HTMLLIElement>('#cells li')];
-      const values = cells.map((cell) => Number(cell.textContent));
-      const result = document.querySelector<HTMLElement>('#result')!;
-      const step = document.querySelector<HTMLButtonElement>('#step')!;
-      let target = input.valueAsNumber;
-      let low = 0;
-      let high = values.length - 1;
-      let comparisons = 0;
-      let found = -1;
-      const midpoint = () => Math.floor((low + high) / 2);
-
-      function render(message: string) {
-        const probe = low <= high && found === -1 ? midpoint() : -1;
-        cells.forEach((cell, index) => {
-          cell.dataset.state = index === found ? 'found' : index === probe ? 'probe' :
-            index < low || index > high ? 'discarded' : 'active';
-        });
-        result.textContent = message;
-        step.disabled = found !== -1 || low > high;
-      }
-
-      form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        target = input.valueAsNumber;
-        low = 0;
-        high = values.length - 1;
-        comparisons = 0;
-        found = -1;
-        render(`Searching for ${target}. Compare it with the outlined midpoint.`);
-      });
-
-      step.addEventListener('click', () => {
-        const mid = midpoint();
-        const value = values[mid];
-        comparisons += 1;
-        if (value === target) {
-          found = mid;
-          render(`Found ${target} at index ${mid} after ${comparisons} comparison(s).`);
-          return;
-        }
-        if (target < value) high = mid - 1;
-        else low = mid + 1;
-        const direction = target < value ? 'left' : 'right';
-        render(low > high
-          ? `${target} is absent after ${comparisons} comparisons.`
-          : `Compared with ${value}. Keep the ${direction} half and inspect the new midpoint.`);
-      });
-
-      render(`Searching for ${target}. Compare it with the outlined midpoint.`);
-    </script>
-  </body>
-</html>
+<LabLayout title="Binary Search Lab" description="An interactive lesson on binary search.">
+  <header>
+    <p class="eyebrow">ALGORITHMS LAB</p>
+    <h1>Binary search</h1>
+    <p>Find a target in a sorted array. Before each step, predict which half the algorithm will keep.</p>
+  </header>
+  <BinarySearch />
+  <p><a href={lessonUrl}>Read the binary search lesson</a></p>
+  <section>
+    <h2>Why it works</h2>
+    <p>When the target is larger than the midpoint, every number to the left is too small. When it’s smaller, the numbers to the right are too large. Each comparison cuts the remaining search interval roughly in half, so the worst case grows as <code>O(log n)</code>.</p>
+    <p>Try searching for <strong>24</strong> to see how the algorithm handles a missing value.</p>
+  </section>
+</LabLayout>
